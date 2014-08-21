@@ -27,6 +27,8 @@ int motor3 = 3; //Vibrador 3
 int speaker = 1; //Speaker 1
 int speaker_2= 0; //Speaker 2 (testeo)
 int input; //debug
+int button = 8; // Defino boton analogico en A2
+int buttonState = 0; // Estado del boton para detectar si esta presionado o no
 
 /* Deteccion de escaleras */
 int dato1=0; //Variable para alojar una medida
@@ -44,6 +46,7 @@ void setup () {
   pinMode(motor3,OUTPUT);// Habilita pin 3 como salida Analogica
   pinMode(speaker, OUTPUT); //Habilita Pin 3 (speaker) como salida Analogica
   pinMode(speaker_2, OUTPUT); //Habilita Pin 10 (speaker_2) como salida Analogica
+  pinMode(button, INPUT);     //Habilita pin Button como entrada analogica
   Serial.println("BastecH  1.0 "); //Imprime Bienvenida
   beep(); //Variable de beep "ok"
   Serial.println("OK"); //Imprime OK
@@ -142,9 +145,23 @@ void srf05_escaleras() {
 }
 /*----------DETECCION DE ESCALERAS-----------*/
 
+/*----------BOTON DE ALARMA------------------*/
+void boton_alarma() {
+  buttonState = digitalRead(button);
+  if (buttonState == HIGH) { //Si el estado del boton esta en alto (se presione)
+  analogWrite(speaker,150); //Envia un pulso modulado de 150 analogico para el speaker
+  } 
+  else { //Sino
+    analogWrite(speaker,LOW); //Cierra el pin para que el speaker se apague
+  }
+}
+/*----------BOTON DE ALARMA------------------*/
+
 void  loop() {
   delay(50); //50ms para los 2 sensores, asi no se retrasa el envio y se ahorra codigo
   srf05_abajo(); //Inizializa sensor de abajo
   srf05_arriba(); //Inicializa Sensor de arriba
   srf05_escaleras(); //Inicializa Sensor de deteccion de escaleras
+  boton_alarma(); //Inilializa boton alarma
 }
+
